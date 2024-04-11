@@ -1,5 +1,6 @@
 package br.com.restwithspringbootandjavaerudio;
 
+import br.com.exception.UnsuportMathOperationExeception;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -14,17 +15,17 @@ public class MathController {
             @PathVariable(value = "numberTwo") String numberTwo
     ) throws Exception {
         if(!isNumeric(numberOne) || !isNumeric(numberTwo)){
-            throw new Exception();
+            throw  new UnsuportMathOperationExeception("Please set a numeric value");
         }
 
         return convertToDouble(numberOne) + convertToDouble(numberTwo);
     }
 
     private Double convertToDouble(String strNumber) {
-        if (strNumber == null) throw new RuntimeException();
+        if (strNumber == null) throw  new UnsuportMathOperationExeception("Please set a numeric value");
         String numberFormated = strNumber.replaceAll(",", ".");
         if (isNumeric(numberFormated)) return Double.parseDouble(numberFormated);
-        throw new RuntimeException();
+        throw  new UnsuportMathOperationExeception("Please set a numeric value");
     }
 
     private boolean isNumeric(String strNumber) {
