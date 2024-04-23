@@ -7,8 +7,8 @@ import java.io.Serial;
 
 //define que será uma execeção que retornara um status HTTP com o erro bad request
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UnsuportMathOperationExeception extends RuntimeException{
-    public UnsuportMathOperationExeception(String message) {
+public class UnfoundResourceExeception extends RuntimeException{
+    public UnfoundResourceExeception(String message) {
         super(message);
     }
 

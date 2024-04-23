@@ -1,5 +1,7 @@
 package br.com.restwithspringbootandjavaerudio.services;
 
+import br.com.restwithspringbootandjavaerudio.DataTransfers.PersonDto;
+import br.com.restwithspringbootandjavaerudio.Mappers.PersonMapper;
 import br.com.restwithspringbootandjavaerudio.domain.Person;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
 import br.com.restwithspringbootandjavaerudio.repositories.PersonRepository;
@@ -18,27 +20,29 @@ public class PersonService {
     @Autowired
     private PersonRepository repository;
 
-    public Person findById(Long id) {
+    public PersonDto findById(Long id) {
 
         logger.info("Finding a Person with id: " + id);
-        return repository.findById(id)
+        return PersonMapper.parseObject(repository.findById(id)
                 .orElseThrow(
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
-                );
+                ), PersonDto.class);
     }
 
-    public List<Person> findALL() {
+    public List<PersonDto> findALL() {
         logger.info("finding all people");
-        return repository.findAll();
+        return PersonMapper.parseList(repository.findAll(),PersonDto.class);
     }
 
-    public Person createPerson(Person p) {
+    public PersonDto createPerson(PersonDto p) {
         logger.info("creating a new person");
-        return repository.save(p);
+        Person person = PersonMapper.parseObject(p, Person.class);
+        return PersonMapper.parseObject(repository.save(person),PersonDto.class);
     }
 
-    public Person updatePerson(Person person) {
+    public PersonDto updatePerson(PersonDto p) {
         logger.info("updating a person");
+        Person person = PersonMapper.parseObject(p,Person.class);
         Person personToUpdate = repository.findById(person.getId())
                 .orElseThrow(
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
@@ -47,7 +51,7 @@ public class PersonService {
         personToUpdate.setLastName(person.getLastName());
         personToUpdate.setAddress(person.getAddress());
         personToUpdate.setGender(person.getGender());
-        return repository.save(personToUpdate);
+        return PersonMapper.parseObject(repository.save(personToUpdate),PersonDto.class);
     }
 
     public void deletePerson(Long id) {

@@ -15,6 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>21</java.version>
+		<dozer.verison>7.0.0</dozer.verison>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -56,6 +57,11 @@
             <version>13.0</version>
             <scope>compile</scope>
         </dependency>
+		<dependency>
+			<groupId>com.github.dozermapper</groupId>
+			<artifactId>dozer-core</artifactId>
+			<version>${dozer.verison}</version>
+		</dependency>
     </dependencies>
 
 	<build>
