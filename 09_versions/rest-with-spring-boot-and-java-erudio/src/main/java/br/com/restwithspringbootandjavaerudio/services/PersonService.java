@@ -1,7 +1,9 @@
 package br.com.restwithspringbootandjavaerudio.services;
 
 import br.com.restwithspringbootandjavaerudio.DataTransfers.V1.PersonDto;
+import br.com.restwithspringbootandjavaerudio.DataTransfers.V2.PersonDtoV2;
 import br.com.restwithspringbootandjavaerudio.Mappers.PersonMapper;
+import br.com.restwithspringbootandjavaerudio.Mappers.custom.PersonCustomMapper;
 import br.com.restwithspringbootandjavaerudio.domain.Person;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
 import br.com.restwithspringbootandjavaerudio.repositories.PersonRepository;
@@ -19,6 +21,8 @@ public class PersonService {
     private final Logger logger = Logger.getLogger(PersonService.class.getName());
     @Autowired
     private PersonRepository repository;
+    @Autowired
+    private PersonCustomMapper mapper;
 
     public PersonDto findById(Long id) {
 
@@ -38,6 +42,11 @@ public class PersonService {
         logger.info("creating a new person");
         Person person = PersonMapper.parseObject(p, Person.class);
         return PersonMapper.parseObject(repository.save(person),PersonDto.class);
+    }
+    public PersonDtoV2 createPersonV2(PersonDtoV2 p) {
+        logger.info("creating a new person");
+        Person person = mapper.ConvertDtoToEntity(p);
+        return mapper.ConvertEntityToDto(repository.save(person));
     }
 
     public PersonDto updatePerson(PersonDto p) {

@@ -1,6 +1,7 @@
 package br.com.restwithspringbootandjavaerudio.controllers;
 
 import br.com.restwithspringbootandjavaerudio.DataTransfers.V1.PersonDto;
+import br.com.restwithspringbootandjavaerudio.DataTransfers.V2.PersonDtoV2;
 import br.com.restwithspringbootandjavaerudio.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,6 +29,12 @@ public class PersonController {
                  produces = MediaType.APPLICATION_JSON_VALUE)
     public PersonDto createPerson(@RequestBody PersonDto person){
         return personService.createPerson(person);
+    }
+    @PostMapping(value = "/v2",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public PersonDtoV2 createPersonV2(@RequestBody PersonDtoV2 person){
+        return personService.createPersonV2(person);
     }
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

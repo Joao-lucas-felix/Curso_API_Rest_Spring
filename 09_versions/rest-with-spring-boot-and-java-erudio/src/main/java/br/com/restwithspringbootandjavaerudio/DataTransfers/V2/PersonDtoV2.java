@@ -12,7 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonDto implements Serializable {
+public class PersonDtoV2 implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private Long id;
