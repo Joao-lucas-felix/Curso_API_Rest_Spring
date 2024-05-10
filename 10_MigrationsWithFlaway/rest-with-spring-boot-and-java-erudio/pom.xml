@@ -62,7 +62,17 @@
 			<artifactId>dozer-core</artifactId>
 			<version>${dozer.verison}</version>
 		</dependency>
-    </dependencies>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
+
+	</dependencies>
 
 	<build>
 		<plugins>
