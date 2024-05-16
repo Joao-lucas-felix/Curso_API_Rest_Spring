@@ -2,12 +2,15 @@ package br.com.restwithspringbootandjavaerudio.services;
 
 import br.com.restwithspringbootandjavaerudio.DataTransfers.PersonDto;
 import br.com.restwithspringbootandjavaerudio.Mappers.PersonMapper;
+import br.com.restwithspringbootandjavaerudio.controllers.PersonController;
 import br.com.restwithspringbootandjavaerudio.domain.Person;
+import br.com.restwithspringbootandjavaerudio.exception.InvalidValuesExeception;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
 import br.com.restwithspringbootandjavaerudio.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
@@ -21,26 +24,48 @@ public class PersonService {
     private PersonRepository repository;
 
     public PersonDto findById(Long id) {
-
+        if (id == null) throw new InvalidValuesExeception("Invalid Value for a search");
         logger.info("Finding a Person with id: " + id);
-        return PersonMapper.parseObject(repository.findById(id)
+        PersonDto person = PersonMapper.parseObject(repository.findById(id)
                 .orElseThrow(
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
                 ), PersonDto.class);
+        person.add(linkTo(methodOn(PersonController.class).findByID(person.getKey())).withSelfRel());
+        return person;
     }
 
     public List<PersonDto> findALL() {
         logger.info("finding all people");
-        return PersonMapper.parseList(repository.findAll(),PersonDto.class);
+        List<PersonDto> personDtos = PersonMapper.parseList(repository.findAll(), PersonDto.class);
+        personDtos
+                .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findByID(p.getKey())).withSelfRel()));
+        return personDtos;
     }
 
+
     public PersonDto createPerson(PersonDto p) {
+        if (p == null ||
+            p.getFirstName() == null ||
+            p.getLastName() == null ||
+            p.getAddress() == null ||
+            p.getGender() == null)       throw new InvalidValuesExeception("Values can not be null");
+
         logger.info("creating a new person");
         Person person = PersonMapper.parseObject(p, Person.class);
-        return PersonMapper.parseObject(repository.save(person),PersonDto.class);
+        PersonDto dto = PersonMapper.parseObject(repository.save(person), PersonDto.class);
+        dto.add(linkTo(methodOn(PersonController.class).findByID(dto.getKey())).withSelfRel());
+        return dto;
     }
 
     public PersonDto updatePerson(PersonDto p) {
+        if (p == null ||
+                p.getKey() == null ||
+                p.getFirstName() == null ||
+                p.getLastName() == null ||
+                p.getAddress() == null ||
+                p.getGender() == null)
+            throw new InvalidValuesExeception("Values can not be null");
+
         logger.info("updating a person");
         Person person = PersonMapper.parseObject(p,Person.class);
         Person personToUpdate = repository.findById(person.getId())
@@ -51,7 +76,9 @@ public class PersonService {
         personToUpdate.setLastName(person.getLastName());
         personToUpdate.setAddress(person.getAddress());
         personToUpdate.setGender(person.getGender());
-        return PersonMapper.parseObject(repository.save(personToUpdate),PersonDto.class);
+        PersonDto dto = PersonMapper.parseObject(repository.save(personToUpdate), PersonDto.class);
+        dto.add(linkTo(methodOn(PersonController.class).findByID(dto.getKey())).withSelfRel());
+        return dto;
     }
 
     public void deletePerson(Long id) {

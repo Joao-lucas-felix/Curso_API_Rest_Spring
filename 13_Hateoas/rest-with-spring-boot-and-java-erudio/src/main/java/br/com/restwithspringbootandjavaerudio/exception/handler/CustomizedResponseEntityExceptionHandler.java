@@ -1,6 +1,7 @@
 package br.com.restwithspringbootandjavaerudio.exception.handler;
 
 import br.com.restwithspringbootandjavaerudio.exception.ExceptionResponse;
+import br.com.restwithspringbootandjavaerudio.exception.InvalidValuesExeception;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +30,23 @@ extends ResponseEntityExceptionHandler
 
     @ExceptionHandler(UnfoundResourceExeception.class) //Trata a exceção criada por mim.
     public final ResponseEntity<ExceptionResponse>
-    handleMathUnsuportOeration(Exception ex, WebRequest wr){
+    handleUnfoundResoucerExeception(Exception ex, WebRequest wr){
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 new Date(),
                 ex.getMessage(),
                 wr.getDescription(false)
         );
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(InvalidValuesExeception.class)
+    public final ResponseEntity<ExceptionResponse>
+    handleInvalidValuesExeception(Exception ex, WebRequest wr){
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                new Date(),
+                ex.getMessage(),
+                wr.getDescription(false)
+        );
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
 
