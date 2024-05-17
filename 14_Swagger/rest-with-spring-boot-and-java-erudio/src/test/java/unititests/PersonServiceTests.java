@@ -1,7 +1,7 @@
 package unititests;
 
 import br.com.restwithspringbootandjavaerudio.DataTransfers.PersonDto;
-import br.com.restwithspringbootandjavaerudio.Mappers.PersonMapper;
+import br.com.restwithspringbootandjavaerudio.Mappers.ObjectMapper;
 import br.com.restwithspringbootandjavaerudio.domain.Person;
 import br.com.restwithspringbootandjavaerudio.exception.InvalidValuesExeception;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
-public class ServiceTests {
+public class PersonServiceTests {
     MockPerson input;
     @InjectMocks
     private PersonService service;
@@ -43,8 +43,8 @@ public class ServiceTests {
         // Mocando o comportamento do repositorio.
         when(repository.findById(1L)).thenReturn(Optional.of(person));
         // Mocando o comportamento do Dozer
-        try (MockedStatic<PersonMapper> mockStatic = Mockito.mockStatic(PersonMapper.class)){
-            mockStatic.when( () -> PersonMapper.parseObject(Person.class, PersonDto.class) )
+        try (MockedStatic<ObjectMapper> mockStatic = Mockito.mockStatic(ObjectMapper.class)){
+            mockStatic.when( () -> ObjectMapper.parseObject(Person.class, PersonDto.class) )
                     .thenReturn(dto);
         }
         //Validando se os resultados não são nulos e se o link hateoas está correto
@@ -58,7 +58,8 @@ public class ServiceTests {
         assertNotNull(result.getAddress());
         assertNotNull(result.getGender());
         assertNotNull(result.getKey());
-        assertTrue(result.toString().contains("links: [</person/1>;rel=\"self\"]"));
+
+        assertTrue(result.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("1", result.getKey().toString());
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
@@ -87,7 +88,7 @@ public class ServiceTests {
         assertNotNull(result.getAddress());
         assertNotNull(result.getGender());
         assertNotNull(result.getKey());
-        assertTrue(result.toString().contains("links: [</person/1>;rel=\"self\"]"));
+        assertTrue(result.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("1", result.getKey().toString());
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
@@ -118,7 +119,7 @@ public class ServiceTests {
         assertNotNull(result.getAddress());
         assertNotNull(result.getGender());
         assertNotNull(result.getKey());
-        assertTrue(result.toString().contains("links: [</person/1>;rel=\"self\"]"));
+        assertTrue(result.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("1", result.getKey().toString());
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
@@ -146,7 +147,7 @@ public class ServiceTests {
         assertNotNull(result.getAddress());
         assertNotNull(result.getGender());
         assertNotNull(result.getKey());
-        assertTrue(result.toString().contains("links: [</person/1>;rel=\"self\"]"));
+        assertTrue(result.toString().contains("</api/person/v1/1>;rel=\"self\""));
         assertEquals("1", result.getKey().toString());
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
@@ -160,7 +161,7 @@ public class ServiceTests {
         assertNotNull(result1.getAddress());
         assertNotNull(result1.getGender());
         assertNotNull(result1.getKey());
-        assertTrue(result1.toString().contains("links: [</person/4>;rel=\"self\"]"));
+        assertTrue(result1.toString().contains("</api/person/v1/4>;rel=\"self\""));
         assertEquals("4", result1.getKey().toString());
         assertEquals("First Name Test4", result1.getFirstName());
         assertEquals("Last Name Test4", result1.getLastName());
@@ -174,7 +175,7 @@ public class ServiceTests {
         assertNotNull(result2.getAddress());
         assertNotNull(result2.getGender());
         assertNotNull(result2.getKey());
-        assertTrue(result2.toString().contains("links: [</person/13>;rel=\"self\"]"));
+        assertTrue(result2.toString().contains("</api/person/v1/13>;rel=\"self\""));
         assertEquals("13", result2.getKey().toString());
         assertEquals("First Name Test13", result2.getFirstName());
         assertEquals("Last Name Test13", result2.getLastName());

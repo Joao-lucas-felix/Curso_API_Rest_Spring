@@ -1,7 +1,7 @@
 package br.com.restwithspringbootandjavaerudio.services;
 
 import br.com.restwithspringbootandjavaerudio.DataTransfers.PersonDto;
-import br.com.restwithspringbootandjavaerudio.Mappers.PersonMapper;
+import br.com.restwithspringbootandjavaerudio.Mappers.ObjectMapper;
 import br.com.restwithspringbootandjavaerudio.controllers.PersonController;
 import br.com.restwithspringbootandjavaerudio.domain.Person;
 import br.com.restwithspringbootandjavaerudio.exception.InvalidValuesExeception;
@@ -9,16 +9,16 @@ import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeceptio
 import br.com.restwithspringbootandjavaerudio.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.logging.Logger;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
 
 
 @Service // diz que é o spring que tem que injetar essa calsse
 public class PersonService {
-    private final AtomicLong counter = new AtomicLong();
     private final Logger logger = Logger.getLogger(PersonService.class.getName());
     @Autowired
     private PersonRepository repository;
@@ -26,7 +26,7 @@ public class PersonService {
     public PersonDto findById(Long id) {
         if (id == null) throw new InvalidValuesExeception("Invalid Value for a search");
         logger.info("Finding a Person with id: " + id);
-        PersonDto person = PersonMapper.parseObject(repository.findById(id)
+        PersonDto person = ObjectMapper.parseObject(repository.findById(id)
                 .orElseThrow(
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
                 ), PersonDto.class);
@@ -36,7 +36,7 @@ public class PersonService {
 
     public List<PersonDto> findALL() {
         logger.info("finding all people");
-        List<PersonDto> personDtos = PersonMapper.parseList(repository.findAll(), PersonDto.class);
+        List<PersonDto> personDtos = ObjectMapper.parseList(repository.findAll(), PersonDto.class);
         personDtos
                 .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findByID(p.getKey())).withSelfRel()));
         return personDtos;
@@ -51,8 +51,8 @@ public class PersonService {
             p.getGender() == null)       throw new InvalidValuesExeception("Values can not be null");
 
         logger.info("creating a new person");
-        Person person = PersonMapper.parseObject(p, Person.class);
-        PersonDto dto = PersonMapper.parseObject(repository.save(person), PersonDto.class);
+        Person person = ObjectMapper.parseObject(p, Person.class);
+        PersonDto dto = ObjectMapper.parseObject(repository.save(person), PersonDto.class);
         dto.add(linkTo(methodOn(PersonController.class).findByID(dto.getKey())).withSelfRel());
         return dto;
     }
@@ -67,7 +67,7 @@ public class PersonService {
             throw new InvalidValuesExeception("Values can not be null");
 
         logger.info("updating a person");
-        Person person = PersonMapper.parseObject(p,Person.class);
+        Person person = ObjectMapper.parseObject(p,Person.class);
         Person personToUpdate = repository.findById(person.getId())
                 .orElseThrow(
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
@@ -76,7 +76,7 @@ public class PersonService {
         personToUpdate.setLastName(person.getLastName());
         personToUpdate.setAddress(person.getAddress());
         personToUpdate.setGender(person.getGender());
-        PersonDto dto = PersonMapper.parseObject(repository.save(personToUpdate), PersonDto.class);
+        PersonDto dto = ObjectMapper.parseObject(repository.save(personToUpdate), PersonDto.class);
         dto.add(linkTo(methodOn(PersonController.class).findByID(dto.getKey())).withSelfRel());
         return dto;
     }
