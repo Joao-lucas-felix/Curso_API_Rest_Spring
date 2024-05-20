@@ -1,0 +1,23 @@
+server:
+  error:
+    include-stacktrace: never
+  port: 8888
+cors:
+  originPatterns: "http://localhost:8080,http://localhost:4200"
+
+spring:
+  application:
+    name=rest-with-spring-boot-and-java-erudio:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+
+
+spring-doc:
+  pathsToMatch: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
