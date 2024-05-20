@@ -1,3 +1,5 @@
+cors:
+  originPatterns: "http://localhost:8080,http://localhost:4200"
 server:
   error:
     include-stacktrace: never
@@ -15,7 +17,6 @@ spring:
       ddl-auto: none
     show-sql: false
     open-in-view: false
-
 
 spring-doc:
   pathsToMatch: /api/**/v1/**
