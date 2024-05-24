@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static io.restassured.RestAssured.certificate;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -118,6 +119,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertTrue(createdPerson.getEnabled());
     }
 
     @Test
@@ -150,9 +152,45 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertTrue(createdPerson.getEnabled());
+
     }
+
     @Test
     @Order(3)//indica que é o primeiro da ordem
+    public void testDisable() throws JsonProcessingException {
+        var content =
+                given()
+                        .spec(specification)
+                        .contentType(TestsConfigs.CONTENT_TYPE_XML)
+                        .accept(TestsConfigs.CONTENT_TYPE_XML)
+                        .pathParams("id", dto.getId())
+                        .when()
+                        .patch("{id}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asString();
+
+
+        PersonDto createdPerson = mapper.readValue(content, PersonDto.class);
+        dto = createdPerson;
+        assertTrue(createdPerson.getId() > 0);
+        assertNotNull(createdPerson.getFirstName());
+        assertNotNull(createdPerson.getLastName());
+        assertNotNull(createdPerson.getAddress());
+        assertNotNull(createdPerson.getGender());
+        assertEquals(dto.getId(), createdPerson.getId());
+        assertEquals("Luffy", createdPerson.getFirstName());
+        assertEquals("Monkey D.", createdPerson.getLastName());
+        assertEquals("Brazil", createdPerson.getAddress());
+        assertEquals("Male", createdPerson.getGender());
+        assertFalse(createdPerson.getEnabled());
+    }
+
+    @Test
+    @Order(4)//indica que é o primeiro da ordem
     public void testUpdate() throws JsonProcessingException {
 
         dto.setFirstName("Dragon");
@@ -185,9 +223,10 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertFalse(createdPerson.getEnabled());
     }
     @Test
-    @Order(4)//indica que é o primeiro da ordem
+    @Order(5)//indica que é o primeiro da ordem
     public void testDelete(){
         var content =
                 given()
@@ -206,7 +245,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
        assertEquals("", content);
     }
     @Test
-    @Order(5)
+    @Order(6)
     public void testFindAll() throws JsonProcessingException {
         var result = given()
                 .spec(specification)
@@ -231,6 +270,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Da Vinci", personOne.getLastName());
         assertEquals("Male", personOne.getGender());
         assertEquals("Italy", personOne.getAddress());
+        assertTrue(personOne.getEnabled());
 //        "id": 6,
 //                "firstName": "João Lucas ",
 //                "lastName": "Felix",
@@ -243,7 +283,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Felix", personTwo.getLastName());
         assertEquals("Male", personTwo.getGender());
         assertEquals("Italy", personTwo.getAddress());
-
+        assertTrue(personTwo.getEnabled());
 
 
 //        "id": 7,
@@ -258,6 +298,7 @@ public class PersonControllerXmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", personThree.getLastName());
         assertEquals("Male", personThree.getGender());
         assertEquals("Italy", personThree.getAddress());
+        assertTrue(personThree.getEnabled());
 
         personDtos.forEach(System.out::println);
     }

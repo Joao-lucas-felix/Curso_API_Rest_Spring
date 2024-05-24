@@ -27,4 +27,7 @@ public class Person implements Serializable {
     private String address;
     @Column
     private String gender;
+    @Column
+    private Boolean enabled;
+
 }

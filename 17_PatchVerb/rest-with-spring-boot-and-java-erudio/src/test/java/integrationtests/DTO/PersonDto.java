@@ -19,6 +19,6 @@ public class PersonDto  implements Serializable {
     private String lastName;
     private String address;
     private String gender;
-
+    private Boolean enabled;
 }
 

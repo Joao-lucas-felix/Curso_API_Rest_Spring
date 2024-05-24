@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PersonControllerYmlTest extends AbstractIntegrationTest {
     private static RequestSpecification specification;
-    private static RequestSpecification specificationUnauthorize ;
+    private static RequestSpecification specificationUnauthorize;
     private static ObjectMapper mapper;
     private static PersonDto dto;
 
@@ -49,7 +49,7 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
 
     @Test
     @Order(0)
-    public void authorization() throws JsonProcessingException{
+    public void authorization() throws JsonProcessingException {
         AccountCredentialsDto user =
                 new AccountCredentialsDto("joao", "admin123");
 
@@ -81,7 +81,7 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         // são iguais aos atributos da clase
 
         specification = new RequestSpecBuilder()
-                .addHeader(TestsConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer "+accessToken)
+                .addHeader(TestsConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
                 .setBasePath("/api/person/v1")
                 .setPort(TestsConfigs.SERVER_PORT)
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
@@ -134,6 +134,7 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertTrue(createdPerson.getEnabled());
     }
 
     @Test
@@ -172,9 +173,51 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertTrue(createdPerson.getEnabled());
     }
+
     @Test
     @Order(3)//indica que é o primeiro da ordem
+    public void testDisable() throws JsonProcessingException {
+        var content =
+                given()
+                        .config(
+                                RestAssured
+                                        .config()
+                                        .encoderConfig(
+                                                encoderConfig()
+                                                        .encodeContentTypeAs("application/x-yaml", ContentType.TEXT)))
+
+                        .spec(specification)
+                        .contentType(TestsConfigs.CONTENT_TYPE_YML)
+                        .accept(TestsConfigs.CONTENT_TYPE_YML)
+                        .pathParams("id", dto.getId())
+                        .when()
+                        .patch("{id}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asString();
+
+
+        PersonDto createdPerson = mapper.readValue(content, PersonDto.class);
+        dto = createdPerson;
+        assertTrue(createdPerson.getId() > 0);
+        assertNotNull(createdPerson.getFirstName());
+        assertNotNull(createdPerson.getLastName());
+        assertNotNull(createdPerson.getAddress());
+        assertNotNull(createdPerson.getGender());
+        assertEquals(dto.getId(), createdPerson.getId());
+        assertEquals("Luffy", createdPerson.getFirstName());
+        assertEquals("Monkey D.", createdPerson.getLastName());
+        assertEquals("Brazil", createdPerson.getAddress());
+        assertEquals("Male", createdPerson.getGender());
+        assertFalse(createdPerson.getEnabled());
+    }
+
+    @Test
+    @Order(4)//indica que é o primeiro da ordem
     public void testUpdate() throws JsonProcessingException {
 
         dto.setFirstName("Dragon");
@@ -213,10 +256,12 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         assertEquals("Monkey D.", createdPerson.getLastName());
         assertEquals("Brazil", createdPerson.getAddress());
         assertEquals("Male", createdPerson.getGender());
+        assertFalse(createdPerson.getEnabled());
     }
+
     @Test
-    @Order(4)//indica que é o primeiro da ordem
-    public void testDelete(){
+    @Order(5)//indica que é o primeiro da ordem
+    public void testDelete() {
         var content =
                 given()
                         .config(
@@ -237,10 +282,11 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
                         .asString();
 
 
-       assertEquals("", content);
+        assertEquals("", content);
     }
+
     @Test
-    @Order(5)
+    @Order(6)
     public void testFindAll() throws JsonProcessingException {
         var result = given()
                 .config(
@@ -259,7 +305,8 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
                 .statusCode(200)
                 .extract()
                 .body().asString();
-        List<PersonDto> personDtos = mapper.readValue(result, new TypeReference<List<PersonDto>>() {});
+        List<PersonDto> personDtos = mapper.readValue(result, new TypeReference<List<PersonDto>>() {
+        });
         PersonDto personOne = personDtos.getFirst();
 //        "id": 2,
 //                "firstName": "Leonardo",
@@ -267,11 +314,12 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
 //                "address": "Italy",
 //                "gender": "Male",
 
-        assertEquals(2,personOne.getId());
+        assertEquals(2, personOne.getId());
         assertEquals("Leonardo", personOne.getFirstName());
         assertEquals("Da Vinci", personOne.getLastName());
         assertEquals("Male", personOne.getGender());
         assertEquals("Italy", personOne.getAddress());
+        assertTrue(personOne.getEnabled());
 //        "id": 6,
 //                "firstName": "João Lucas ",
 //                "lastName": "Felix",
@@ -279,12 +327,12 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
 //                "gender": "Male",'
 
         PersonDto personTwo = personDtos.get(2);
-        assertEquals(6,personTwo.getId());
+        assertEquals(6, personTwo.getId());
         assertEquals("João Lucas ", personTwo.getFirstName());
         assertEquals("Felix", personTwo.getLastName());
         assertEquals("Male", personTwo.getGender());
         assertEquals("Italy", personTwo.getAddress());
-
+        assertTrue(personTwo.getEnabled());
 
 
 //        "id": 7,
@@ -294,13 +342,13 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
 //                "gender": "Male",
 
         PersonDto personThree = personDtos.get(3);
-        assertEquals(7,personThree.getId());
+        assertEquals(7, personThree.getId());
         assertEquals("Luffy ", personThree.getFirstName());
         assertEquals("Monkey D.", personThree.getLastName());
         assertEquals("Male", personThree.getGender());
         assertEquals("Italy", personThree.getAddress());
+        assertTrue(personTwo.getEnabled());
 
-        personDtos.forEach(System.out::println);
     }
 
 
@@ -358,6 +406,7 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         assertEquals("", content);
 
     }
+
     @Test
     @Order(6)
     public void testUpdateWithoutAuthorizationToken() throws JsonProcessingException {
@@ -386,6 +435,7 @@ public class PersonControllerYmlTest extends AbstractIntegrationTest {
         assertEquals("", content);
 
     }
+
     @Test
     @Order(6)
     public void testDeleteWithoutAuthorizationToken() throws JsonProcessingException {

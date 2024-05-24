@@ -18,7 +18,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonPropertyOrder({"id", "firstName", "lastName", "address", "gender"})
+@JsonPropertyOrder({"id", "firstName", "lastName", "address", "gender", "enabled"})
 public class PersonDto extends RepresentationModel<PersonDto> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -29,6 +29,7 @@ public class PersonDto extends RepresentationModel<PersonDto> implements Seriali
     private String lastName;
     private String address;
     private String gender;
+    private Boolean enabled;
 
     @Override
     public boolean equals(Object o) {
@@ -36,12 +37,12 @@ public class PersonDto extends RepresentationModel<PersonDto> implements Seriali
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         PersonDto dto = (PersonDto) o;
-        return Objects.equals(key, dto.key) && Objects.equals(firstName, dto.firstName) && Objects.equals(lastName, dto.lastName) && Objects.equals(address, dto.address) && Objects.equals(gender, dto.gender);
+        return Objects.equals(key, dto.key) && Objects.equals(firstName, dto.firstName) && Objects.equals(lastName, dto.lastName) && Objects.equals(address, dto.address) && Objects.equals(gender, dto.gender) && Objects.equals(enabled, dto.enabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), key, firstName, lastName, address, gender);
+        return Objects.hash(super.hashCode(), key, firstName, lastName, address, gender, enabled);
     }
 }
 

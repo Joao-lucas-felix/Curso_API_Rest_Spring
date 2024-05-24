@@ -7,6 +7,7 @@ import br.com.restwithspringbootandjavaerudio.domain.Person;
 import br.com.restwithspringbootandjavaerudio.exception.InvalidValuesExeception;
 import br.com.restwithspringbootandjavaerudio.exception.UnfoundResourceExeception;
 import br.com.restwithspringbootandjavaerudio.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,7 @@ public class PersonService {
             p.getGender() == null)       throw new InvalidValuesExeception("Values can not be null");
 
         logger.info("creating a new person");
+        p.setEnabled(true);
         Person person = ObjectMapper.parseObject(p, Person.class);
         PersonDto dto = ObjectMapper.parseObject(repository.save(person), PersonDto.class);
         dto.add(linkTo(methodOn(PersonController.class).findByID(dto.getKey())).withSelfRel());
@@ -88,6 +90,19 @@ public class PersonService {
                         () -> new UnfoundResourceExeception("Unfound Resource with this ID")
                 );
         repository.delete(personToDelete);
+    }
+    @Transactional
+    public PersonDto disableById(Long id) {
+        if (id == null) throw new InvalidValuesExeception("Invalid Value for a search");
+        logger.info("Disable the Person with id: " + id);
+
+        repository.disable(id);
+        PersonDto person = ObjectMapper.parseObject(repository.findById(id)
+                .orElseThrow(
+                        () -> new UnfoundResourceExeception("Unfound Resource with this ID")
+                ), PersonDto.class);
+        person.add(linkTo(methodOn(PersonController.class).findByID(person.getKey())).withSelfRel());
+        return person;
     }
 
 }

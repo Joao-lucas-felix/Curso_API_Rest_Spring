@@ -111,4 +111,23 @@ public class PersonController {
         personService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Disable a specific person by ID",
+            description = "Disable a specific person by ID",
+            tags = "People",
+            responses = {
+                    @ApiResponse(description = "Sucess", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = PersonDto.class))),
+                    @ApiResponse(description = "No content", responseCode = "204", content = @Content),
+                    @ApiResponse(description = "Bad request", responseCode = "400", content = @Content),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+                    @ApiResponse(description = "Not found", responseCode = "402", content = @Content),
+                    @ApiResponse(description = "Internal server error", responseCode = "500", content = @Content),
+            })
+    @PatchMapping(value = "/{id}",
+            produces = {MediaType.aplicationJson, MediaType.aplicationXml, MediaType.aplicationYml})
+    public PersonDto disable(@PathVariable(value = "id") Long id) {
+        return personService.disableById(id);
+    }
+
 }
