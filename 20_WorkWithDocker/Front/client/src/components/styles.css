@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Birthstone+Bounce:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+TAS+Beginner:wght@400..700&display=swap');
+.title{ 
+    font-family: "Birthstone Bounce", cursive;
+    font-weight: 400;
+    font-style: normal;
+    color: #7DFF8A;
+}
+.paragrafo{
+    font-family: "Edu TAS Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+}
+
+.span{
+    font-family: "Edu TAS Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+}
+
+.cor-tema{
+    color: #7DFF8A;
+}
+.cor-tema-bg{
+    background-color: #7DFF8A;
+}
+.cor-destaque-p{
+    color: #222121;
+}
+.cor-destaque{
+    background-color: #222121;
+}
+
+.texto-btn{
+    font-family: "Edu TAS Beginner", cursive;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+}
+
+.tamanho-card{
+ width: 18rem;
+}
